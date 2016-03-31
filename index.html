@@ -20,29 +20,31 @@
       });
     }
   </script>
+  Event: <br>
   <div id='events'></div>
+  Property <br>
   <div id='properties'></div>
   <div id="table" style='width:943px'></div>
   <script>
-	var script = document.getElementById('query').innerHTML;
+  var script = document.getElementById('query').innerHTML;
   var eventSelect = $('#events').MPEventSelect();
   var propSelect = $('#properties').MPPropertySelect();
   propSelect.MPPropertySelect('setEvent');
   var eventTable = $('#table').MPTable({showPercentages: false, firstColHeader: 'Frequency'});
-	function runQuery() {
+  function runQuery() {
     var params = {
       'from_date': new Date(new Date().valueOf() - (29 * 24 * 60 * 60 * 1000)).toISOString().slice(0,-14),
-		  'to_date': new Date().toISOString().slice(0,-14),
-		  'event': eventSelect.MPEventSelect('value'),
+      'to_date': new Date().toISOString().slice(0,-14),
+      'event': eventSelect.MPEventSelect('value'),
       'property': propSelect.MPPropertySelect('value')
-		};
-		MP.api.custom_query(script, params).done(function(results) {
+    };
+    MP.api.custom_query(script, params).done(function(results) {
       var res = _.chain(results).map(function(item) {var obj = {}; obj.Property = item.key[0]? item.key[0]: 'No Property'; obj.Count = item.value; return obj;}).sortBy(item => -1 * item.Count).value();res.unshift(''); delete res[0];
-		  eventTable.MPTable('setData', res);
-		});
-	}
-	eventSelect.on('change', function() {runQuery();});
-	propSelect.on('change', function() {runQuery();});
+      eventTable.MPTable('setData', res);
+    });
+  }
+  eventSelect.on('change', function() {runQuery();});
+  propSelect.on('change', function() {runQuery();});
   </script>
   </body>
 </html>
