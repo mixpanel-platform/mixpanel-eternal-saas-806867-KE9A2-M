@@ -7,17 +7,17 @@
   </head>
   <body class="mixpanel-platform-body">
   <script id='query'>
+    function getProperty(event) {
+      return event.properties[params.property];
+    }
+
     function main() {
-      return Events({
-          from_date: params.from_date,
-          to_date: params.to_date,
-      })
-      .filter(function(event) {return event.name == params.event;})
-      .groupBy([event => event.properties[params.property]], function(accumulators, items) {
-          var ret = items.length;
-          _.each(accumulators, function(accum) {ret += accum;});
-          return ret;
-      });
+        return Events({
+            from_date: params.from_date,
+            to_date: params.to_date,
+        })
+       .filter(function(event) {return event.name == params.event;})
+       .groupBy([getProperty], mixpanel.reducer.count());
     }
   </script>
   Event: <br>
