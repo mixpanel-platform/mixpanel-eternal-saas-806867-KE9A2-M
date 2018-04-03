@@ -7,17 +7,16 @@
   </head>
   <body class="mixpanel-platform-body">
   <script id='query'>
-    function getProperty(event) {
-      return event.properties[params.property];
-    }
+    var eventSubstr = 'Browse_Classes.Impression.';
 
     function main() {
-        return Events({
-            from_date: params.from_date,
-            to_date: params.to_date,
-        })
-       .filter(function(event) {return event.name == params.event;})
-       .groupBy([getProperty], mixpanel.reducer.count());
+      return Events({
+        from_date: '2018-03-04',
+        to_date:   '2018-04-03'
+      })
+     .filter(event => event.name.indexOf(eventSubstr) !== -1)
+     .groupBy(['name'], mixpanel.reducer.noop())
+     .map(res => res.key[0]);
     }
   </script>
   Date: <br>
@@ -41,7 +40,8 @@
       'event': eventSelect.MPEventSelect('value'),
       'property': propSelect.MPPropertySelect('value')
     };
-    MP.api.custom_query(script, params).done(function(results) {
+    MP.api.custom_query(script, {}).done(function(results) {
+      debugger;
       var res = _.chain(results).map(function(item) {var obj = {}; obj.Property = item.key[0]? item.key[0]: 'No Property'; obj.Count = item.value; return obj;}).sortBy(item => -1 * item.Count).value();res.unshift(''); delete res[0];
       eventTable.MPTable('setData', res);
     });
